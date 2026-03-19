@@ -1,83 +1,100 @@
 cmake_minimum_required(VERSION 3.30)
-project(calculator)
+project(media-analyser)
 
 
 # Main library
-add_library(calculator STATIC)
-add_library(calculator::calculator ALIAS calculator)
+add_library(media-analyser STATIC)
+add_library(media_analyser::media_analyser ALIAS media-analyser)
 
-target_sources(calculator
+target_sources(media-analyser
     PUBLIC
-        FILE_SET calculator_headers
+        FILE_SET media_analyser_headers
         TYPE HEADERS
         BASE_DIRS include
         FILES
-            include/calculator.hpp
+            include/logger.hpp
+            include/media_analyser.hpp
+            include/media_decoder.hpp
+            include/media_types.hpp
+            include/file_loader.hpp
     PRIVATE
-        src/calculator.cpp
+        src/logger.cpp
+        src/media_analyser.cpp
+        src/media_decoder.cpp
+        src/file_loader.cpp
 )
 
-target_compile_features(calculator PUBLIC cxx_std_20)
+target_compile_features(media-analyser PUBLIC cxx_std_17)
 
-install(
-    TARGETS calculator
-    EXPORT calculatorTargets
-    FILE_SET calculator_headers
+add_executable(mp3task)
+
+target_sources(mp3task
+    PRIVATE
+        src/main.cpp
+)
+
+target_link_libraries(mp3task
+    PRIVATE
+        media-analyser
 )
 
 install(
-    EXPORT calculatorTargets
-    DESTINATION share/cmake/calculator
-    NAMESPACE calculator::
+    TARGETS media-analyser
+    EXPORT media_analyser_targets
+    FILE_SET media_analyser_headers
+)
+
+install(
+    EXPORT media_analyser_targets
+    DESTINATION share/cmake/media-analyser
+    NAMESPACE media_analyser::
 )
 
 install(
     FILES cmake/calculatorConfig.cmake
-    DESTINATION share/cmake/calculator
+    DESTINATION share/cmake/media-analyser
 )
 
 include(CPack)
 
-option(CALCULATOR_ENABLE_TEST "Enable testing" OFF)
-if(CALCULATOR_ENABLE_TEST)
+option(MEDIA_ANALYSER_ENABLE_TEST "Enable testing" OFF)
+if(MEDIA_ANALYSER_ENABLE_TEST)
     find_package(doctest REQUIRED)
     include(CTest)
     include(doctest)
+target_compile_definitions(media-analyser PRIVATE MEDIA_ANALYSER_TEST)
 
-    add_executable(calculator_tests)
-    target_sources(calculator_tests
+    add_executable(media-analyser-tests)
+    target_sources(media-analyser-tests
         PRIVATE
             tests/main.cpp
-            tests/unit/calculator.utest.cpp
-            tests/integration/calculator.itest.cpp
+            tests/unit/logger.utest.cpp
+            tests/unit/media_decoder.utest.cpp
     )
-    target_link_libraries(calculator_tests
+    target_link_libraries(media-analyser-tests
         PRIVATE
-            calculator
+            media-analyser
             doctest::doctest
     )
-    doctest_discover_tests(calculator_tests)
-
-else()
-    target_compile_definitions(calculator PRIVATE DOCTEST_CONFIG_DISABLE)
+    doctest_discover_tests(media-analyser-tests)
 endif()
 
 
-option(CALCULATOR_ENABLE_BENCH "Enable benchmarking" OFF)
-if(CALCULATOR_ENABLE_BENCH)
-    find_package(benchmark REQUIRED)
+# option(MEDIA_ANALYSER_ENABLE_BENCH "Enable benchmarking" OFF)
+# if(MEDIA_ANALYSER_ENABLE_BENCH)
+#     find_package(benchmark REQUIRED)
 
-    add_executable(calculator_benchmarks)
+#     add_executable(media-analyser-bench)
 
-    target_sources(calculator_benchmarks
-        PRIVATE
-            benches/calculator.benchmark.cpp
-    )
+#     target_sources(media-analyser-bench
+#         PRIVATE
+#             benches/calculator.benchmark.cpp
+#     )
 
-    target_link_libraries(calculator_benchmarks
-        PRIVATE
-            calculator
-            benchmark::benchmark
-    )
+#     target_link_libraries(media-analyser-bench
+#         PRIVATE
+#             calculator
+#             benchmark::benchmark
+#     )
 
-endif()
+# endif()
