@@ -1,0 +1,19 @@
+{
+    "version": 9,
+    "include": [
+        "CMakeGenericPresets.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "platform",
+            "hidden": true,
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "cl",
+                "CMAKE_CXX_FLAGS": "/W4 /permissive- /EHsc",
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_C_FLAGS": "/W4 /permissive-"
+            }
+        }
+    ]
+}

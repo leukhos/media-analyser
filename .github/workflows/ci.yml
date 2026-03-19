@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  BUILD_DIR: ${{ github.workspace }}/build/test
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Cache vcpkg dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.BUILD_DIR }}/vcpkg_installed
+          key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-${{ matrix.preset }}-
+
+      - name: Setup environment (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          echo "VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}" >> $GITHUB_ENV
+
+      - name: Setup environment (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure CMake
+        run: >
+          cmake --preset test -S ${{ github.workspace }}
+
+      - name: Build
+        run: cmake --build --preset test
+
+      - name: Test
+        run: ctest --preset test

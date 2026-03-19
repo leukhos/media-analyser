@@ -1,0 +1,132 @@
+{
+    "version": 9,
+    "include": [
+        "cmake/presets/CMake${hostSystemName}Presets.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "dev",
+            "inherits": "platform",
+            "displayName": "Development (Debug)",
+            "description": "Unoptimized debug build with full symbols and tests enabled.",
+            "binaryDir": "${sourceDir}/build/dev",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CALCULATOR_ENABLE_TEST": "ON",
+                "VCPKG_MANIFEST_FEATURES": "test"
+            }
+        },
+        {
+            "name": "test",
+            "inherits": "platform",
+            "displayName": "Test (RelWithDebInfo)",
+            "description": "Optimized build with debug info and tests enabled.",
+            "binaryDir": "${sourceDir}/build/test",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CALCULATOR_ENABLE_TEST": "ON",
+                "VCPKG_MANIFEST_FEATURES": "test"
+            }
+        },
+        {
+            "name": "release",
+            "inherits": "platform",
+            "displayName": "Release",
+            "description": "Fully optimized release build with tests disabled.",
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "bench",
+            "inherits": "release",
+            "displayName": "Benchmark",
+            "description": "Fully optimized release build with benchmarks enabled.",
+            "cacheVariables": {
+                "CALCULATOR_ENABLE_BENCH": "ON",
+                "VCPKG_MANIFEST_FEATURES": "benchmark"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "dev",
+            "displayName": "Development (Debug)",
+            "description": "Build debug binaries for local development.",
+            "configurePreset": "dev",
+            "targets": ["all"]
+        },
+        {
+            "name": "test",
+            "displayName": "Test (RelWithDebInfo)",
+            "description": "Build optimized binaries for test execution.",
+            "configurePreset": "test",
+            "targets": ["calculator_tests"]
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "description": "Build fully optimized release binaries.",
+            "configurePreset": "release"
+        },
+        {
+            "name": "bench",
+            "displayName": "Benchmark",
+            "description": "Build optimized benchmark binaries.",
+            "configurePreset": "bench",
+            "targets": ["calculator_benchmarks"]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "dev",
+            "displayName": "Development (Debug)",
+            "description": "Run tests against the debug build.",
+            "configurePreset": "dev",
+            "output": {"outputOnFailure": true},
+            "execution": {"noTestsAction": "error"}
+        },
+        {
+            "name": "test",
+            "displayName": "Test (RelWithDebInfo)",
+            "description": "Run tests against the optimized test build.",
+            "configurePreset": "test",
+            "output": {"outputOnFailure": true},
+            "execution": {"noTestsAction": "error"}
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "release",
+            "displayName": "Release",
+            "description": "Package the release build for distribution.",
+            "configurePreset": "release",
+            "generators": [
+                "7Z"
+            ]
+         }
+    ],
+    "workflowPresets": [
+        {
+            "name": "test",
+            "displayName": "Test",
+            "description": "Configure, build, and run tests using the test preset.",
+            "steps": [
+                {"type": "configure", "name": "test"},
+                {"type": "build", "name": "test"},
+                {"type": "test", "name": "test"}
+            ]
+        },
+        {
+            "name": "deploy",
+            "displayName": "Deploy",
+            "description": "Configure, build, and package a release for deployment.",
+            "steps": [
+                {"type": "configure", "name": "release"},
+                {"type": "build", "name": "release"},
+                {"type": "package", "name": "release"}
+            ]
+        }
+    ]
+}
