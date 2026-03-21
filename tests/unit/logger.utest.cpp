@@ -20,7 +20,9 @@ private:
   std::streambuf* m_original;
 };
 
-TEST_CASE("StdErrLogger::log(LogLevel level, std::string_view message)") {
+TEST_SUITE_BEGIN("unit");
+
+TEST_CASE("StdErrLogger::log") {
   ma::StdErrLogger logger;
   CerrCapture cerr;
   std::string message{"log message"};
@@ -90,3 +92,5 @@ TEST_CASE("StdErrLogger::log(LogLevel level, std::string_view message)") {
     CHECK(output.back() == '\n');
   }
 }
+
+TEST_SUITE_END();

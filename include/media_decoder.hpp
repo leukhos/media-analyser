@@ -9,7 +9,8 @@ namespace media_analyser {
 
 class DecodeError : public std::runtime_error {
 public:
-  explicit DecodeError(const std::string& message) : std::runtime_error{message} {}
+  explicit DecodeError(const std::string& message)
+      : std::runtime_error{message} {}
 };
 
 class IMediaDecoder {
