@@ -5,6 +5,7 @@
       "description": "Test dependencies",
       "dependencies": [
         "doctest",
+        "mp3lame",
         "trompeloeil"
       ]
     },

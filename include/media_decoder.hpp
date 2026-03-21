@@ -15,14 +15,14 @@ public:
 
 class IMediaDecoder {
 public:
-  virtual bool is_supported(ByteSpan buffer) = 0;
+  virtual bool is_supported(ByteSpan buffer) noexcept = 0;
   virtual MediaInfo decode(ByteSpan buffer) = 0;
   virtual ~IMediaDecoder() = default;
 };
 
 class Mp3MediaDecoder : public IMediaDecoder {
 public:
-  bool is_supported(ByteSpan buffer) override;
+  bool is_supported(ByteSpan buffer) noexcept override;
   MediaInfo decode(ByteSpan buffer) override;
 
 private:
