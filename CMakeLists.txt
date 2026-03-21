@@ -63,15 +63,17 @@ if(MEDIA_ANALYSER_ENABLE_TEST)
     find_package(mp3lame CONFIG REQUIRED)
     include(CTest)
     include(doctest)
-    target_compile_definitions(media-analyser PRIVATE MEDIA_ANALYSER_TEST)
+    target_compile_definitions(media-analyser PUBLIC MEDIA_ANALYSER_TEST)
 
     add_executable(media-analyser-tests)
     target_sources(media-analyser-tests
         PRIVATE
             tests/main.cpp
             tests/unit/logger.utest.cpp
+            tests/unit/media_analyser.utest.cpp
             tests/unit/media_decoder.utest.cpp
             tests/integration/file_loader.itest.cpp
+            tests/integration/media_analyser.itest.cpp
     )
     target_link_libraries(media-analyser-tests
         PRIVATE
