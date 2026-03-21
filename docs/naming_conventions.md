@@ -164,3 +164,52 @@ These conventions prioritize:
 - **Readability**: PascalCase types are visually distinct from snake_case values
 - **Clarity**: `m_` and `g_` prefixes make scope immediately visible
 - **Safety**: Global access (`g_`) is flagged as a code smell indicator
+
+---
+
+# CMake Naming Conventions
+
+## Quick Reference
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Project name | `kebab-case` | `media-analyser` |
+| Target name | `kebab-case` | `media-analyser-tests` |
+| Namespace alias | `snake_case::` | `media_analyser::media_analyser` |
+| Variables / Options | `SCREAMING_SNAKE_CASE` | `MEDIA_ANALYSER_ENABLE_TEST` |
+| File sets / exports | `snake_case` | `media_analyser_headers` |
+
+---
+
+## Project & Target Names: `kebab-case`
+
+Use hyphens for project and target names:
+
+```cmake
+project(media-analyser)
+add_library(media-analyser STATIC)
+add_executable(media-analyser-tests)
+```
+
+## Namespace Aliases: `snake_case::`
+
+```cmake
+add_library(media_analyser::media_analyser ALIAS media-analyser)
+```
+
+## Variables & Options: `SCREAMING_SNAKE_CASE`
+
+All CMake variables and options use uppercase with underscores, consistent with C++ constants. Always prefix with the project name to avoid collisions:
+
+```cmake
+option(MEDIA_ANALYSER_ENABLE_TEST "Enable testing" OFF)
+option(MEDIA_ANALYSER_ENABLE_BENCH "Enable benchmarking" OFF)
+set(MEDIA_ANALYSER_SOURCES src/foo.cpp)
+```
+
+## File Sets & Exports: `snake_case`
+
+```cmake
+FILE_SET media_analyser_headers
+EXPORT media_analyserTargets
+```

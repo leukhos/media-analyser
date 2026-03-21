@@ -12,7 +12,7 @@
             "binaryDir": "${sourceDir}/build/dev",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CALCULATOR_ENABLE_TEST": "ON",
+                "MEDIA_ANALYSER_ENABLE_TEST": "ON",
                 "VCPKG_MANIFEST_FEATURES": "test"
             }
         },
@@ -24,7 +24,7 @@
             "binaryDir": "${sourceDir}/build/test",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "CALCULATOR_ENABLE_TEST": "ON",
+                "MEDIA_ANALYSER_ENABLE_TEST": "ON",
                 "VCPKG_MANIFEST_FEATURES": "test"
             }
         },
@@ -44,7 +44,7 @@
             "displayName": "Benchmark",
             "description": "Fully optimized release build with benchmarks enabled.",
             "cacheVariables": {
-                "CALCULATOR_ENABLE_BENCH": "ON",
+                "MEDIA_ANALYSER_ENABLE_BENCH": "ON",
                 "VCPKG_MANIFEST_FEATURES": "benchmark"
             }
         }
@@ -62,20 +62,21 @@
             "displayName": "Test (RelWithDebInfo)",
             "description": "Build optimized binaries for test execution.",
             "configurePreset": "test",
-            "targets": ["calculator_tests"]
+            "targets": ["media-analyser-tests"]
         },
         {
             "name": "release",
             "displayName": "Release",
             "description": "Build fully optimized release binaries.",
-            "configurePreset": "release"
+            "configurePreset": "release",
+            "targets": ["media-analyser"]
         },
         {
             "name": "bench",
             "displayName": "Benchmark",
             "description": "Build optimized benchmark binaries.",
             "configurePreset": "bench",
-            "targets": ["calculator_benchmarks"]
+            "targets": ["media-analyser-bench"]
         }
     ],
     "testPresets": [
