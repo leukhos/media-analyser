@@ -70,8 +70,9 @@ target_compile_definitions(media-analyser PRIVATE MEDIA_ANALYSER_TEST)
             tests/main.cpp
             tests/unit/logger.utest.cpp
             tests/unit/media_decoder.utest.cpp
+            tests/integration/file_loader.itest.cpp
     )
-    target_link_libraries(media-analyser-tests
+target_link_libraries(media-analyser-tests
         PRIVATE
             media-analyser
             doctest::doctest

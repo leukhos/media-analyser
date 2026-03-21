@@ -3,12 +3,8 @@
 
 namespace media_analyser {
 
-bool Mp3MediaDecoder::is_supported(ByteSpan buffer) {
-  return false;
-}
+bool Mp3MediaDecoder::is_supported(ByteSpan buffer) { return false; }
 
-MediaInfo Mp3MediaDecoder::decode(ByteSpan buffer) {
-  return MediaInfo();
-}
+MediaInfo Mp3MediaDecoder::decode(ByteSpan buffer) { return MediaInfo(); }
 
 } // namespace media_analyser

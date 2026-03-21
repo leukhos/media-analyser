@@ -17,7 +17,9 @@ public:
 
 #ifdef MEDIA_ANALYSER_TEST
   void set_logger(const std::shared_ptr<ILogger>& logger) { m_logger = logger; }
-  void set_file_loader(const std::shared_ptr<IFileLoader>& file_loader) { m_file_loader = file_loader; }
+  void set_file_loader(const std::shared_ptr<IFileLoader>& file_loader) {
+    m_file_loader = file_loader;
+  }
 #endif
 
   bool is_supported(const std::string& filename) const;
