@@ -60,9 +60,10 @@ include(CPack)
 option(MEDIA_ANALYSER_ENABLE_TEST "Enable testing" OFF)
 if(MEDIA_ANALYSER_ENABLE_TEST)
     find_package(doctest REQUIRED)
+    find_package(mp3lame CONFIG REQUIRED)
     include(CTest)
     include(doctest)
-target_compile_definitions(media-analyser PRIVATE MEDIA_ANALYSER_TEST)
+    target_compile_definitions(media-analyser PRIVATE MEDIA_ANALYSER_TEST)
 
     add_executable(media-analyser-tests)
     target_sources(media-analyser-tests
@@ -72,10 +73,11 @@ target_compile_definitions(media-analyser PRIVATE MEDIA_ANALYSER_TEST)
             tests/unit/media_decoder.utest.cpp
             tests/integration/file_loader.itest.cpp
     )
-target_link_libraries(media-analyser-tests
+    target_link_libraries(media-analyser-tests
         PRIVATE
             media-analyser
             doctest::doctest
+            mp3lame::mp3lame
     )
     doctest_discover_tests(media-analyser-tests)
 endif()
