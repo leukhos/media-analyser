@@ -97,17 +97,6 @@
             "execution": {"noTestsAction": "error"}
         }
     ],
-    "packagePresets": [
-        {
-            "name": "release",
-            "displayName": "Release",
-            "description": "Package the release build for distribution.",
-            "configurePreset": "release",
-            "generators": [
-                "7Z"
-            ]
-         }
-    ],
     "workflowPresets": [
         {
             "name": "test",
@@ -117,16 +106,6 @@
                 {"type": "configure", "name": "test"},
                 {"type": "build", "name": "test"},
                 {"type": "test", "name": "test"}
-            ]
-        },
-        {
-            "name": "deploy",
-            "displayName": "Deploy",
-            "description": "Configure, build, and package a release for deployment.",
-            "steps": [
-                {"type": "configure", "name": "release"},
-                {"type": "build", "name": "release"},
-                {"type": "package", "name": "release"}
             ]
         }
     ]

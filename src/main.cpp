@@ -12,9 +12,12 @@ int main(int argc, char** argv) {
       ma::MediaAnalyser(std::make_shared<ma::Mp3MediaDecoder>());
 
   const std::filesystem::path input{argv[1]};
-  auto details = mp3_analyser.analyse(input);
-  if (details.is_valid) {
-    std::cout << details.frame_count << std::endl;
+  auto media_info = mp3_analyser.analyse(input);
+  if (media_info.is_valid) {
+    std::cout << "MP3 details:\n"
+              << "\tFrames       : " << media_info.frame_count << '\n'
+              << "\tSample rate  : " << media_info.sample_rate << '\n'
+              << "\tAvg bit rate : " << media_info.average_bitrate << std::endl;
   }
 
   return 0;
