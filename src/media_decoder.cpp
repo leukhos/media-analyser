@@ -17,6 +17,19 @@ constexpr int MPEG1_L3_BITRATES[16] = {
 // Index 3 = reserved (invalid).
 constexpr int MPEG1_SAMPLE_RATES[4] = {44100, 48000, 32000, -1};
 
+// Returns true if the 4 bytes at `h` carry a valid MPEG audio sync word
+// (any version, any layer). Rejects reserved version (01) and reserved layer
+// (00) but does NOT enforce MPEG-1 or Layer III specifically.
+bool is_mpeg_sync_hdr(const uint8_t* h) noexcept {
+  if (h[0] != 0xFF || (h[1] & 0xE0) != 0xE0)
+    return false;
+  if (((h[1] >> 3) & 0x3) == 0x1) // reserved MPEG version
+    return false;
+  if (((h[1] >> 1) & 0x3) == 0x0) // reserved layer
+    return false;
+  return true;
+}
+
 // Returns true if the 4 bytes at `h` form a valid MPEG-1 Layer III header.
 // Byte 1 mask 0xFE: sync(111) + version(11=MPEG1) + layer(01=III), CRC ignored.
 bool is_mpeg1_l3_hdr(const uint8_t* h) noexcept {
@@ -83,6 +96,16 @@ size_t trim_id3v1(const uint8_t* buf, size_t size) noexcept {
   return size;
 }
 
+// Returns offset of the first MPEG audio sync header (any version/layer)
+// in [data, data+size), or `size` if none found.
+size_t find_first_mpeg_frame(const uint8_t* data, size_t size) noexcept {
+  for (size_t i = 0; i + 4 <= size; ++i) {
+    if (is_mpeg_sync_hdr(data + i))
+      return i;
+  }
+  return size;
+}
+
 // Returns offset of the first valid MPEG-1 L3 header in [data, data+size),
 // or `size` if none found.
 size_t find_first_frame(const uint8_t* data, size_t size) noexcept {
@@ -114,8 +137,26 @@ const char* validate(ByteSpan buffer) noexcept {
   if (size < 4)
     return "no audio data found after stripping ID3 tags";
 
-  if (find_first_frame(data, size) >= size)
-    return "no valid MPEG-1 Layer III frame found";
+  const size_t pos = find_first_mpeg_frame(data, size);
+  if (pos >= size)
+    return "no MPEG audio frame found";
+
+  // Byte 1, bits 4-3: MPEG version. 0b11 = MPEG 1 (only supported version).
+  if (((data[pos + 1] >> 3) & 0x3) != 0x3)
+    return "unsupported MPEG version (only MPEG 1 is supported)";
+
+  // Byte 1, bits 2-1: layer. 0b01 = Layer III (only supported layer).
+  if (((data[pos + 1] >> 1) & 0x3) != 0x1)
+    return "unsupported MPEG layer (only Layer III is supported)";
+
+  // Byte 2, bits 7-4: bitrate index. 0 = free-format, 15 = reserved.
+  const int br = (data[pos + 2] >> 4) & 0xF;
+  if (br == 0 || br == 15)
+    return "free-format or reserved bitrate index in MPEG frame header";
+
+  // Byte 2, bits 3-2: sample rate index. 3 = reserved.
+  if (((data[pos + 2] >> 2) & 0x3) == 0x3)
+    return "reserved sample rate index in MPEG frame header";
 
   return nullptr;
 }
@@ -123,10 +164,6 @@ const char* validate(ByteSpan buffer) noexcept {
 } // namespace
 
 // ── Public interface ──────────────────────────────────────────────────────────
-
-bool Mp3MediaDecoder::is_supported(ByteSpan buffer) noexcept {
-  return validate(buffer) == nullptr;
-}
 
 void Mp3MediaDecoder::check(ByteSpan buffer) const {
   const char* err = validate(buffer);

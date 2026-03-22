@@ -2,8 +2,8 @@
 
 #include "media_types.hpp"
 
+#include <filesystem>
 #include <memory>
-#include <string>
 
 namespace media_analyser {
 
@@ -22,8 +22,7 @@ public:
   }
 #endif
 
-  bool is_supported(const std::string& filename) const;
-  MediaInfo analyse(const std::string& filename) const;
+  MediaInfo analyse(const std::filesystem::path& path) const;
 
 private:
   std::shared_ptr<IMediaDecoder> m_decoder;

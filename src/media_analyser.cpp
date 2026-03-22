@@ -17,11 +17,16 @@ MediaAnalyser::MediaAnalyser(std::shared_ptr<IMediaDecoder> decoder)
       m_file_loader{std::make_shared<IfstreamFileLoader>()},
       m_logger{std::make_shared<StdErrLogger>()} {}
 
-bool MediaAnalyser::is_supported(const std::string& filename) const {
-  return false;
-}
+MediaInfo MediaAnalyser::analyse(const std::filesystem::path& path) const {
+  try {
+    auto buf = m_file_loader->load(path);
+    return m_decoder->decode({buf.data(), buf.size()});
+  } catch (const DecodeError& e) {
+    m_logger->log(LogLevel::Error, e.what());
+  } catch (const std::runtime_error& e) {
+    m_logger->log(LogLevel::Error, e.what());
+  }
 
-MediaInfo MediaAnalyser::analyse(const std::string& filename) const {
   return {};
 }
 

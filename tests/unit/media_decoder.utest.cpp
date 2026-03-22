@@ -165,133 +165,6 @@ static std::vector<std::byte> make_mp3(int bitrate_kbps = 0,
 
 TEST_SUITE_BEGIN("unit");
 
-TEST_CASE("Mp3MediaDecoder::is_supported") {
-  ma::Mp3MediaDecoder decoder;
-
-  SUBCASE("empty buffer") { CHECK_FALSE(decoder.is_supported(to_span({}))); }
-
-  SUBCASE("1-byte buffer") {
-    const std::vector<std::byte> buf{std::byte{0xFF}};
-
-    CHECK_FALSE(decoder.is_supported(to_span(buf)));
-  }
-
-  SUBCASE("not an MP3 file — all zeros") {
-    const std::vector<std::byte> buf(16, std::byte{0x00});
-
-    CHECK_FALSE(decoder.is_supported(to_span(buf)));
-  }
-
-  SUBCASE("not an MP3 file — random non-sync bytes") {
-    // 0x49 0x44 0x33 = "ID3" without a preceding valid MP3 frame
-    const std::vector<std::byte> buf{std::byte{0x49}, std::byte{0x44},
-                                     std::byte{0x33}, std::byte{0x03}};
-
-    CHECK_FALSE(decoder.is_supported(to_span(buf)));
-  }
-
-  SUBCASE("MPEG-2 Layer III") {
-    const auto buf = make_invalid_frame(MPEG2_L3_HDR);
-
-    CHECK_FALSE(decoder.is_supported(to_span(buf)));
-  }
-
-  SUBCASE("MPEG-1 Layer I") {
-    const auto buf = make_invalid_frame(MPEG1_L1_HDR);
-
-    CHECK_FALSE(decoder.is_supported(to_span(buf)));
-  }
-
-  SUBCASE("MPEG-1 Layer II") {
-    const auto buf = make_invalid_frame(MPEG1_L2_HDR);
-
-    CHECK_FALSE(decoder.is_supported(to_span(buf)));
-  }
-
-  SUBCASE("MPEG-1 Layer III") {
-    SUBCASE("bad bitrate index (0xF = reserved)") {
-      const auto buf = make_invalid_frame(MPEG1_L3_BAD_BITRATE_HDR);
-
-      CHECK_FALSE(decoder.is_supported(to_span(buf)));
-    }
-
-    SUBCASE("reserved sample rate index (11)") {
-      const auto buf = make_invalid_frame(MPEG1_L3_BAD_SAMPLERATE_HDR);
-
-      CHECK_FALSE(decoder.is_supported(to_span(buf)));
-    }
-
-    SUBCASE("Non-Headered") {
-      SUBCASE("CBR, mono") {
-        const auto buf = make_mp3(128, 44100, 1);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-
-      SUBCASE("CBR, stereo") {
-        const auto buf = make_mp3(128, 44100);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-
-      SUBCASE("VBR, mono") {
-        const auto buf = make_mp3(128, 44100, 1, Tags::VBR);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-
-      SUBCASE("VBR, stereo") {
-        const auto buf = make_mp3(128, 44100, 2, Tags::VBR);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-    }
-
-    SUBCASE("Headered") {
-      SUBCASE("CBR") {
-        const auto buf = make_mp3(128, 44100, 2, Tags::HEADERED);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-
-      SUBCASE("VBR") {
-        const auto buf = make_mp3(128, 44100, 2, Tags::HEADERED | Tags::VBR);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-    }
-
-    SUBCASE("ID3 metadata") {
-      SUBCASE("ID3v2 at start of buffer") {
-        const auto buf = make_mp3(128, 44100, 2, Tags::ID3V2, 5);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-
-      SUBCASE("ID3v1 at end of buffer") {
-        const auto buf = make_mp3(128, 44100, 2, Tags::ID3V1, 5);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-
-      SUBCASE("ID3v2 at start and ID3v1 at end") {
-        // Both tag types present simultaneously — the common real-world layout.
-        const auto buf = make_mp3(128, 44100, 2, Tags::ID3V1 | Tags::ID3V2, 5);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-
-      SUBCASE("ID3v2 at start, Xing VBR header, ID3v1 at end") {
-        const auto buf = make_mp3(
-            128, 44100, 2,
-            Tags::VBR | Tags::HEADERED | Tags::ID3V1 | Tags::ID3V2, 10);
-
-        CHECK(decoder.is_supported(to_span(buf)));
-      }
-    }
-  }
-}
-
 // ── decode
 // ────────────────────────────────────────────────────────────────────
 
@@ -303,8 +176,22 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK_THROWS_AS(decoder.decode(to_span({})), ma::DecodeError);
     }
 
+    SUBCASE("1-byte buffer") {
+      const std::vector<std::byte> buf{std::byte{0xFF}};
+
+      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+    }
+
     SUBCASE("2-byte buffer") {
       const std::vector<std::byte> buf{std::byte{0xFF}, std::byte{0xFB}};
+
+      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+    }
+
+    SUBCASE("not an MP3 file — random non-sync bytes") {
+      // 0x49 0x44 0x33 = "ID3" without a preceding valid MP3 frame
+      const std::vector<std::byte> buf{std::byte{0x49}, std::byte{0x44},
+                                       std::byte{0x33}, std::byte{0x03}};
 
       CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
     }
