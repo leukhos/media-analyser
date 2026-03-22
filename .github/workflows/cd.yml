@@ -1,0 +1,99 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+
+jobs:
+  validate-version:
+    name: Validate version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Check tag matches CMakeLists.txt version
+        run: |
+          CMAKE_VERSION=$(grep -m1 'project(media-analyser VERSION' CMakeLists.txt \
+            | sed 's/.*VERSION \([0-9][0-9.]*\).*/\1/')
+          TAG_VERSION="${GITHUB_REF_NAME#v}"   # strip leading 'v'
+          TAG_VERSION="${TAG_VERSION%%-*}"      # strip pre-release suffix (e.g. -rc.1)
+          echo "CMakeLists.txt version : $CMAKE_VERSION"
+          echo "Tag version            : $TAG_VERSION"
+          if [ "$CMAKE_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Version mismatch: CMakeLists.txt declares $CMAKE_VERSION but the tag is $GITHUB_REF_NAME"
+            exit 1
+          fi
+
+  build:
+    name: Build & package (${{ matrix.os }})
+    needs: validate-version
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            cpack_generator: TGZ
+          - os: macos-latest
+            cpack_generator: TGZ
+          - os: windows-latest
+            cpack_generator: ZIP
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Cache vcpkg dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ github.workspace }}/build/release/vcpkg_installed
+          key: ${{ runner.os }}-vcpkg-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-release-
+
+      - name: Setup environment (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: echo "VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}" >> $GITHUB_ENV
+
+      - name: Setup environment (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure CMake
+        run: cmake --preset release -S ${{ github.workspace }}
+
+      - name: Build
+        run: cmake --build --preset release
+
+      - name: Package with CPack
+        working-directory: ${{ github.workspace }}/build/release
+        run: cpack -G ${{ matrix.cpack_generator }} -B ${{ github.workspace }}/packages
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ runner.os }}
+          path: ${{ github.workspace }}/packages/*
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all platform packages
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
