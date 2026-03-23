@@ -54,8 +54,7 @@
             "name": "dev",
             "displayName": "Development (Debug)",
             "description": "Build debug binaries for local development.",
-            "configurePreset": "dev",
-            "targets": ["all"]
+            "configurePreset": "dev"
         },
         {
             "name": "test",
