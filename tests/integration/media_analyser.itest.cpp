@@ -36,7 +36,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 150);
     CHECK(info.sample_rate == 32000);
-    CHECK(info.average_bitrate == 141);
+    CHECK(info.average_bitrate == doctest::Approx(141.0f));
   }
 
   // Same VBR bitrate sweep at 44.1 kHz.
@@ -46,7 +46,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 410);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 124);
+    CHECK(info.average_bitrate == doctest::Approx(124.0f));
   }
 
   // Same VBR bitrate sweep at 48 kHz.
@@ -55,7 +55,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 150);
     CHECK(info.sample_rate == 48000);
-    CHECK(info.average_bitrate == 141);
+    CHECK(info.average_bitrate == doctest::Approx(141.0f));
   }
 
   // CBR 128 kbps, 44.1 kHz. Exercises all channel mode values
@@ -65,7 +65,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 128);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 128);
+    CHECK(info.average_bitrate == doctest::Approx(128.0f));
   }
 
   // CBR 128 kbps, 44.1 kHz, stereo. Covers the common encoder code paths
@@ -75,7 +75,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 30);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 128);
+    CHECK(info.average_bitrate == doctest::Approx(128.0f));
   }
 
   // CBR 64 kbps, 48 kHz, mono. Broad Layer III compliance test —
@@ -85,7 +85,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 217);
     CHECK(info.sample_rate == 48000);
-    CHECK(info.average_bitrate == 64);
+    CHECK(info.average_bitrate == doctest::Approx(64.0f));
   }
 
   // CBR 64 kbps, 44.1 kHz, mono. Focuses on side information field
@@ -95,7 +95,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 118);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 64);
+    CHECK(info.average_bitrate == doctest::Approx(64.0f));
   }
 
   // CBR 64 kbps, 44.1 kHz, mono. Exercises short and mixed block types
@@ -105,7 +105,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 64);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 64);
+    CHECK(info.average_bitrate == doctest::Approx(64.0f));
   }
 
   // CBR 64 kbps, 44.1 kHz, mono. Exercises boundary conditions in the
@@ -115,7 +115,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 75);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 64);
+    CHECK(info.average_bitrate == doctest::Approx(64.0f));
   }
 
   // Synthetic 1 kHz sine at 0 dB, CBR 128 kbps, joint stereo, no tags.
@@ -125,7 +125,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 318);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 128);
+    CHECK(info.average_bitrate == doctest::Approx(128.0f));
   }
 
   // ── Real-world files with metadata ───────────────────────────────────────
@@ -138,7 +138,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 4);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 128);
+    CHECK(info.average_bitrate == doctest::Approx(128.0f));
   }
 
   // CBR 128 kbps with an ID3v2.3 header, no Xing tag.
@@ -148,7 +148,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 46);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 128);
+    CHECK(info.average_bitrate == doctest::Approx(128.0f));
   }
 
   // VBR file with an ID3v2.4 header and a Xing tag.
@@ -159,7 +159,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 41);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 34);
+    CHECK(info.average_bitrate == doctest::Approx(34.0f));
   }
 
   // CBR 256 kbps with an ID3v2.3 tag that contains a null-byte field
@@ -169,7 +169,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(info.is_valid);
     CHECK(info.frame_count == 10);
     CHECK(info.sample_rate == 44100);
-    CHECK(info.average_bitrate == 256);
+    CHECK(info.average_bitrate == doctest::Approx(256.0f));
   }
 
   // ── Unsupported formats — must return is_valid false ─────────────────────

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <streambuf>
+#include <string>
 
 namespace ma = media_analyser;
 

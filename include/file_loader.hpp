@@ -2,9 +2,16 @@
 
 #include <cstddef>
 #include <filesystem>
+#include <stdexcept>
+#include <string_view>
 #include <vector>
 
 namespace media_analyser {
+
+class FileLoaderError : public std::runtime_error {
+public:
+  explicit FileLoaderError(std::string_view message);
+};
 
 class IFileLoader {
 public:

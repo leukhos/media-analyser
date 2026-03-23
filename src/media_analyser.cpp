@@ -1,11 +1,13 @@
 #include "media_analyser.hpp"
-
 #include "file_loader.hpp"
 #include "logger.hpp"
 #include "media_decoder.hpp"
 #include "media_types.hpp"
 
+#include <exception>
 #include <filesystem>
+#include <memory>
+#include <string>
 #include <utility>
 
 namespace fs = std::filesystem;
@@ -21,9 +23,11 @@ MediaInfo MediaAnalyser::analyse(const std::filesystem::path& path) const {
   try {
     auto buf = m_file_loader->load(path);
     return m_decoder->decode({buf.data(), buf.size()});
-  } catch (const DecodeError& e) {
-    m_logger->log(LogLevel::Error, e.what());
-  } catch (const std::runtime_error& e) {
+  } catch (const FileLoaderError& e) {
+    m_logger->log(LogLevel::Error, std::string("FileLoader: ") + e.what());
+  } catch (const MediaDecoderError& e) {
+    m_logger->log(LogLevel::Error, std::string("MediaDecoder: ") + e.what());
+  } catch (const std::exception& e) {
     m_logger->log(LogLevel::Error, e.what());
   }
 

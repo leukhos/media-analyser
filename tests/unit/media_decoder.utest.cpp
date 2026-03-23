@@ -45,6 +45,10 @@ static constexpr std::array<std::byte, 4> MPEG1_L3_BAD_BITRATE_HDR{
 static constexpr std::array<std::byte, 4> MPEG1_L3_BAD_SAMPLERATE_HDR{
     std::byte{0xFF}, std::byte{0xFB}, std::byte{0x9C}, std::byte{0x00}};
 
+// MPEG-1 Layer III, free-format bitrate (index 0) — Byte2=0x00
+static constexpr std::array<std::byte, 4> MPEG1_L3_FREE_FORMAT_HDR{
+    std::byte{0xFF}, std::byte{0xFB}, std::byte{0x00}, std::byte{0x00}};
+
 // ── Helpers
 // ───────────────────────────────────────────────────────────────────
 
@@ -56,7 +60,7 @@ static ma::ByteSpan to_span(const std::vector<std::byte>& v) {
 // Only used for invalid-format inputs where the frame size is irrelevant.
 static std::vector<std::byte>
 make_invalid_frame(const std::array<std::byte, 4>& hdr, int size = 128) {
-  std::vector<std::byte> buf(static_cast<size_t>(size), std::byte{0x00});
+  std::vector<std::byte> buf(static_cast<std::size_t>(size), std::byte{0x00});
   std::copy(hdr.begin(), hdr.end(), buf.begin());
   return buf;
 }
@@ -97,10 +101,10 @@ struct Lame {
 static std::vector<std::byte> lame_encode_silence(lame_t gfp, int n_frames) {
   const int channels = lame_get_num_channels(gfp);
   const int n_pcm = 1152 * n_frames;
-  std::vector<short> pcm(static_cast<size_t>(n_pcm * channels), 0);
+  std::vector<short> pcm(static_cast<std::size_t>(n_pcm * channels), 0);
 
   const int mp3_max = n_pcm + 7200;
-  std::vector<unsigned char> mp3(static_cast<size_t>(mp3_max));
+  std::vector<unsigned char> mp3(static_cast<std::size_t>(mp3_max));
 
   int written = lame_encode_buffer_interleaved(gfp, pcm.data(), n_pcm,
                                                mp3.data(), mp3_max);
@@ -111,14 +115,14 @@ static std::vector<std::byte> lame_encode_silence(lame_t gfp, int n_frames) {
   // The placeholder sits after any ID3v2 tag; lame_get_id3v2_tag() gives the
   // exact tag size so we know the precise write offset without any scanning.
   unsigned char tag[2048];
-  const size_t tag_n = lame_get_lametag_frame(gfp, tag, sizeof(tag));
+  const std::size_t tag_n = lame_get_lametag_frame(gfp, tag, sizeof(tag));
   if (tag_n > 0) {
-    const size_t id3v2_size = lame_get_id3v2_tag(gfp, nullptr, 0);
-    if (id3v2_size + tag_n <= static_cast<size_t>(total))
+    const std::size_t id3v2_size = lame_get_id3v2_tag(gfp, nullptr, 0);
+    if (id3v2_size + tag_n <= static_cast<std::size_t>(total))
       std::copy(tag, tag + tag_n, mp3.begin() + id3v2_size);
   }
 
-  std::vector<std::byte> result(static_cast<size_t>(total));
+  std::vector<std::byte> result(static_cast<std::size_t>(total));
   std::transform(mp3.begin(), mp3.begin() + total, result.begin(),
                  [](unsigned char c) { return std::byte{c}; });
   return result;
@@ -171,65 +175,74 @@ TEST_SUITE_BEGIN("unit");
 TEST_CASE("Mp3MediaDecoder::decode") {
   ma::Mp3MediaDecoder decoder;
 
-  SUBCASE("invalid input throws DecodeError") {
+  SUBCASE("invalid input throws MediaDecoderError") {
     SUBCASE("empty buffer") {
-      CHECK_THROWS_AS(decoder.decode(to_span({})), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span({})),
+                           doctest::Contains("too small"), ma::MediaDecoderError);
     }
 
     SUBCASE("1-byte buffer") {
       const std::vector<std::byte> buf{std::byte{0xFF}};
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("too small"), ma::MediaDecoderError);
     }
 
     SUBCASE("2-byte buffer") {
       const std::vector<std::byte> buf{std::byte{0xFF}, std::byte{0xFB}};
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("too small"), ma::MediaDecoderError);
     }
 
     SUBCASE("not an MP3 file — random non-sync bytes") {
       // 0x49 0x44 0x33 = "ID3" without a preceding valid MP3 frame
       const std::vector<std::byte> buf{std::byte{0x49}, std::byte{0x44},
                                        std::byte{0x33}, std::byte{0x03}};
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("sync"), ma::MediaDecoderError);
     }
 
     SUBCASE("not an MP3 file — all zeros") {
       const std::vector<std::byte> buf(128, std::byte{0x00});
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("sync"), ma::MediaDecoderError);
     }
 
     SUBCASE("MPEG-2 Layer III") {
       const auto buf = make_invalid_frame(MPEG2_L3_HDR);
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("unsupported"), ma::MediaDecoderError);
     }
 
     SUBCASE("MPEG-1 Layer I") {
       const auto buf = make_invalid_frame(MPEG1_L1_HDR);
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("unsupported"), ma::MediaDecoderError);
     }
 
     SUBCASE("MPEG-1 Layer II") {
       const auto buf = make_invalid_frame(MPEG1_L2_HDR);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("unsupported"), ma::MediaDecoderError);
+    }
 
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+    SUBCASE("free-format bitrate (index 0)") {
+      const auto buf = make_invalid_frame(MPEG1_L3_FREE_FORMAT_HDR);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("free-format"), ma::MediaDecoderError);
     }
 
     SUBCASE("bad bitrate index (0xF = reserved)") {
       const auto buf = make_invalid_frame(MPEG1_L3_BAD_BITRATE_HDR);
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("reserved bitrate"),
+                           ma::MediaDecoderError);
     }
 
     SUBCASE("reserved sample rate index (11)") {
       const auto buf = make_invalid_frame(MPEG1_L3_BAD_SAMPLERATE_HDR);
-
-      CHECK_THROWS_AS(decoder.decode(to_span(buf)), ma::DecodeError);
+      CHECK_THROWS_WITH_AS(decoder.decode(to_span(buf)),
+                           doctest::Contains("reserved sample rate"),
+                           ma::MediaDecoderError);
     }
   }
 
@@ -245,7 +258,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 2); // 1 requested frame + 1 LAME flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == 128);
+        CHECK(info.average_bitrate == doctest::Approx(128.0f));
       }
 
       SUBCASE("multiple frames, 128 kbps, 44100 Hz") {
@@ -256,7 +269,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == 128);
+        CHECK(info.average_bitrate == doctest::Approx(128.0f));
       }
 
       SUBCASE("48000 Hz — sample rate reported correctly") {
@@ -274,7 +287,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         const ma::MediaInfo info = decoder.decode(to_span(buf));
 
         CHECK(info.is_valid);
-        CHECK(info.average_bitrate == 320);
+        CHECK(info.average_bitrate == doctest::Approx(320.0f));
       }
 
       SUBCASE("mono — side-info is 17 bytes instead of 32") {
@@ -285,7 +298,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == 128);
+        CHECK(info.average_bitrate == doctest::Approx(128.0f));
       }
     }
 
@@ -326,7 +339,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == 128);
+        CHECK(info.average_bitrate == doctest::Approx(128.0f));
       }
 
       SUBCASE("Info tag, mono") {
@@ -337,7 +350,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == 128);
+        CHECK(info.average_bitrate == doctest::Approx(128.0f));
       }
     }
 
@@ -375,7 +388,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == 128);
+      CHECK(info.average_bitrate == doctest::Approx(128.0f));
     }
 
     SUBCASE("ID3v1 at end of buffer") {
@@ -388,7 +401,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == 128);
+      CHECK(info.average_bitrate == doctest::Approx(128.0f));
     }
 
     SUBCASE("ID3v2 at start and ID3v1 at end") {
@@ -400,7 +413,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == 128);
+      CHECK(info.average_bitrate == doctest::Approx(128.0f));
     }
 
     SUBCASE("ID3v2 at start, Info CBR header, ID3v1 at end") {
@@ -412,7 +425,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == 128);
+      CHECK(info.average_bitrate == doctest::Approx(128.0f));
     }
 
     SUBCASE("ID3v2 at start, Xing VBR header, ID3v1 at end") {

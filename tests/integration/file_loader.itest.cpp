@@ -2,8 +2,9 @@
 
 #include <doctest/doctest.h>
 
+#include <cstddef>
 #include <filesystem>
-#include <stdexcept>
+#include <string>
 
 namespace ma = media_analyser;
 
@@ -39,9 +40,9 @@ TEST_CASE("IfstreamFileLoader::load") {
     CHECK(result[3] == std::byte{0x00});
   }
 
-  SUBCASE("throws std::runtime_error when file does not exist") {
+  SUBCASE("throws FileLoaderError when file does not exist") {
     CHECK_THROWS_AS(loader.load(samples_dir / "nonexistent.txt"),
-                    std::runtime_error);
+                    ma::FileLoaderError);
   }
 }
 
