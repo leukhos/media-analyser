@@ -7,11 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
-env:
-  BUILD_DIR: ${{ github.workspace }}/build/test
-
 jobs:
   test:
+    name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -24,27 +22,24 @@ jobs:
       - name: Cache vcpkg dependencies
         uses: actions/cache@v5
         with:
-          path: |
-            ${{ env.BUILD_DIR }}/vcpkg_installed
-          key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-          restore-keys: |
-            ${{ runner.os }}-vcpkg-${{ matrix.preset }}-
+          path: ${{ github.workspace }}/build/vcpkg_installed
+          key: ${{ runner.os }}-vcpkg-test-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: ${{ runner.os }}-vcpkg-test-
 
       - name: Setup environment (Linux/macOS)
         if: runner.os != 'Windows'
-        run: |
-          echo "VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}" >> $GITHUB_ENV
+        run: echo "VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}" >> $GITHUB_ENV
 
       - name: Setup environment (Windows)
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure CMake
-        run: >
-          cmake --preset test -S ${{ github.workspace }}
+        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }}
 
       - name: Build
-        run: cmake --build --preset test
+        run: cmake --build ${{ github.workspace }}/build --target media-analyser-tests
 
       - name: Test
-        run: ctest --preset test
+        working-directory: ${{ github.workspace }}/build
+        run: ctest --output-on-failure --no-tests=error
