@@ -2,6 +2,7 @@
 #include "file_loader.hpp"
 #include "logger.hpp"
 #include "media_decoder.hpp"
+#include "media_types.hpp"
 
 #include <doctest/doctest.h>
 #include <doctest/trompeloeil.hpp>
@@ -10,7 +11,6 @@
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
-#include <utility>
 #include <vector>
 
 namespace ma = media_analyser;
@@ -40,24 +40,27 @@ TEST_CASE("MediaAnalyser::analyse") {
   const std::filesystem::path fake_path{"path"};
   const std::vector<std::byte> fake_bytes{std::byte{0x01}, std::byte{0x02}};
 
-  SUBCASE("FileLoader throws — logs Error, returns invalid MediaInfo") {
+  SUBCASE("FileLoader throws — logs Error with 'FileLoader', returns invalid "
+          "MediaInfo") {
     ALLOW_CALL(*mock_file_loader, load(fake_path))
-        .THROW(std::runtime_error("load failed"));
+        .THROW(ma::FileLoaderError("load failed"));
 
-    REQUIRE_CALL(*mock_logger, log(ma::LogLevel::Error, trompeloeil::_));
+    REQUIRE_CALL(*mock_logger,
+                 log(ma::LogLevel::Error, trompeloeil::re("FileLoader")));
 
     const ma::MediaInfo result = analyser.analyse(fake_path);
 
     CHECK_FALSE(result.is_valid);
   }
 
-  SUBCASE(
-      "decoder throws DecodeError — logs Error, returns invalid MediaInfo") {
+  SUBCASE("decoder throws MediaDecoderError — logs Error with 'MediaDecoder', "
+          "returns invalid MediaInfo") {
     ALLOW_CALL(*mock_file_loader, load(fake_path)).RETURN(fake_bytes);
     ALLOW_CALL(*mock_decoder, decode(trompeloeil::_))
-        .THROW(ma::DecodeError("bad frame"));
+        .THROW(ma::MediaDecoderError("bad frame"));
 
-    REQUIRE_CALL(*mock_logger, log(ma::LogLevel::Error, trompeloeil::_));
+    REQUIRE_CALL(*mock_logger,
+                 log(ma::LogLevel::Error, trompeloeil::re("MediaDecoder")));
 
     const ma::MediaInfo result = analyser.analyse(fake_path);
 
@@ -78,7 +81,7 @@ TEST_CASE("MediaAnalyser::analyse") {
   }
 
   SUBCASE("success — returns MediaInfo from decoder, no logging") {
-    const ma::MediaInfo expected{true, 100, 44100, 128};
+    const ma::MediaInfo expected{true, 100, 44100, 128.0f};
     ALLOW_CALL(*mock_logger, log(trompeloeil::_, trompeloeil::_));
     ALLOW_CALL(*mock_file_loader, load(fake_path)).RETURN(fake_bytes);
     ALLOW_CALL(*mock_decoder, decode(trompeloeil::_)).RETURN(expected);
@@ -88,7 +91,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(result.is_valid);
     CHECK(result.frame_count == 100);
     CHECK(result.sample_rate == 44100);
-    CHECK(result.average_bitrate == 128);
+    CHECK(result.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
   }
 }
 

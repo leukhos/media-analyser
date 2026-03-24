@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 namespace media_analyser {
 
@@ -11,9 +12,9 @@ struct ByteSpan {
 
 struct MediaInfo {
   bool is_valid = false;
-  int frame_count = 0;
+  std::uint32_t frame_count = 0;
   int sample_rate = 0;     // Hz
-  int average_bitrate = 0; // kbps
+  float average_bitrate = 0.0f; // kbps
 };
 
 } // namespace media_analyser
