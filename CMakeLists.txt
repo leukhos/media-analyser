@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(media-analyser VERSION 0.1.0)
+project(media-analyser VERSION 1.0.0)
 
 # Main library
 add_library(media-analyser-lib STATIC)
