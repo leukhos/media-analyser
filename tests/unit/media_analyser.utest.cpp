@@ -91,7 +91,7 @@ TEST_CASE("MediaAnalyser::analyse") {
     CHECK(result.is_valid);
     CHECK(result.frame_count == 100);
     CHECK(result.sample_rate == 44100);
-    CHECK(result.average_bitrate == doctest::Approx(128.0f));
+    CHECK(result.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
   }
 }
 

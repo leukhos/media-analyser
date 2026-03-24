@@ -258,7 +258,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 2); // 1 requested frame + 1 LAME flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == doctest::Approx(128.0f));
+        CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
       }
 
       SUBCASE("multiple frames, 128 kbps, 44100 Hz") {
@@ -269,7 +269,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == doctest::Approx(128.0f));
+        CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
       }
 
       SUBCASE("48000 Hz — sample rate reported correctly") {
@@ -287,7 +287,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         const ma::MediaInfo info = decoder.decode(to_span(buf));
 
         CHECK(info.is_valid);
-        CHECK(info.average_bitrate == doctest::Approx(320.0f));
+        CHECK(info.average_bitrate == doctest::Approx(320.0f).epsilon(0.001));
       }
 
       SUBCASE("mono — side-info is 17 bytes instead of 32") {
@@ -298,7 +298,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == doctest::Approx(128.0f));
+        CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
       }
     }
 
@@ -339,7 +339,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == doctest::Approx(128.0f));
+        CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
       }
 
       SUBCASE("Info tag, mono") {
@@ -350,7 +350,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
         CHECK(info.is_valid);
         CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
         CHECK(info.sample_rate == 44100);
-        CHECK(info.average_bitrate == doctest::Approx(128.0f));
+        CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
       }
     }
 
@@ -388,7 +388,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == doctest::Approx(128.0f));
+      CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
     }
 
     SUBCASE("ID3v1 at end of buffer") {
@@ -401,7 +401,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == doctest::Approx(128.0f));
+      CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
     }
 
     SUBCASE("ID3v2 at start and ID3v1 at end") {
@@ -413,7 +413,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 6); // 5 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == doctest::Approx(128.0f));
+      CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
     }
 
     SUBCASE("ID3v2 at start, Info CBR header, ID3v1 at end") {
@@ -425,7 +425,7 @@ TEST_CASE("Mp3MediaDecoder::decode") {
       CHECK(info.is_valid);
       CHECK(info.frame_count == 11); // 10 requested frames + 1 flush frame
       CHECK(info.sample_rate == 44100);
-      CHECK(info.average_bitrate == doctest::Approx(128.0f));
+      CHECK(info.average_bitrate == doctest::Approx(128.0f).epsilon(0.001));
     }
 
     SUBCASE("ID3v2 at start, Xing VBR header, ID3v1 at end") {

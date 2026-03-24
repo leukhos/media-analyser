@@ -32,10 +32,20 @@ void Mp3MediaDecoder::prepare_buffer(ByteSpan& buffer) const {
   if (buffer.size < 4)
     throw MediaDecoderError("no audio data found after stripping ID3 tags");
 
+  const std::byte* end = buffer.data + buffer.size;
   const std::byte* hdr = buffer.data;
-  if (hdr[0] != std::byte{0xFF} ||
-      (hdr[1] & std::byte{0xE0}) != std::byte{0xE0})
+
+  // Advance past any leading bytes that don't form an MP3 sync word.
+  while (hdr + 4 <= end && !(hdr[0] == std::byte{0xFF} &&
+                              (hdr[1] & std::byte{0xE0}) == std::byte{0xE0}))
+    ++hdr;
+
+  if (hdr + 4 > end)
     throw MediaDecoderError("not an MP3 file: no sync word found");
+
+  buffer.data = hdr;
+  buffer.size = static_cast<std::size_t>(end - hdr);
+
   if ((hdr[1] & std::byte{0xFE}) != std::byte{0xFA})
     throw MediaDecoderError(
         "unsupported format: only MPEG-1 Layer III is supported");
