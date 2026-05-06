@@ -26,20 +26,23 @@ jobs:
           key: ${{ runner.os }}-vcpkg-test-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
           restore-keys: ${{ runner.os }}-vcpkg-test-
 
-      - name: Setup environment (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Setup environment
+        shell: bash
         run: echo "VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}" >> $GITHUB_ENV
 
-      - name: Setup environment (Windows)
+      - name: Setup MSVC (Windows)
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure CMake
-        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+        shell: bash
+        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 
       - name: Build
+        shell: bash
         run: cmake --build ${{ github.workspace }}/build
 
       - name: Test
+        shell: bash
         working-directory: ${{ github.workspace }}/build
         run: ctest --output-on-failure --no-tests=error
