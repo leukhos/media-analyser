@@ -70,9 +70,9 @@ cmake --build --preset release
 
 ## CMake Options
 
-| Option                       | Default | Description          |
-|------------------------------|---------|----------------------|
-| `MEDIA_ANALYSER_ENABLE_TEST` | OFF     | Build the test suite |
+| Option                        | Default | Description          |
+|-------------------------------|---------|----------------------|
+| `MEDIA_ANALYSER_ENABLE_TESTS` | OFF     | Build the test suite |
 
 ## Dependencies
 

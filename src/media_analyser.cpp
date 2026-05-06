@@ -19,6 +19,12 @@ MediaAnalyser::MediaAnalyser(std::shared_ptr<IMediaDecoder> decoder)
       m_file_loader{std::make_shared<IfstreamFileLoader>()},
       m_logger{std::make_shared<StdErrLogger>()} {}
 
+MediaAnalyser::MediaAnalyser(std::shared_ptr<IMediaDecoder> decoder,
+                             std::shared_ptr<IFileLoader> file_loader,
+                             std::shared_ptr<ILogger> logger)
+    : m_decoder{std::move(decoder)}, m_file_loader{std::move(file_loader)},
+      m_logger{std::move(logger)} {}
+
 MediaInfo MediaAnalyser::analyse(const std::filesystem::path& path) const {
   try {
     auto buf = m_file_loader->load(path);

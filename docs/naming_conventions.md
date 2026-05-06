@@ -2,21 +2,21 @@
 
 ## Quick Reference
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| Classes/Structs | PascalCase | `Calculator`, `HttpClient` |
-| Variables | snake_case | `counter`, `file_name` |
-| Functions/Methods | snake_case | `process_data()`, `get_name()` |
-| Member variables | `m_` prefix | `m_value`, `m_is_valid` |
-| Static members | `m_` prefix | `m_instance_count` |
-| Global variables | `g_` prefix | `g_debug_mode` |
-| Constants | SCREAMING_SNAKE_CASE | `MAX_BUFFER_SIZE` |
-| Namespaces | snake_case | `data_processing`, `network` |
-| Trait interfaces | `-able` suffix | `Drawable`, `Serializable` |
-| Service interfaces | `I` prefix | `ILogger`, `ICalculator` |
-| Enums | PascalCase | `enum class Color { Red, Green }` |
-| Type aliases | PascalCase | `using StringList = ...` |
-| Files | snake_case | `data_processor.cpp` |
+| Element            | Convention           | Example                           |
+|--------------------|----------------------|-----------------------------------|
+| Classes/Structs    | PascalCase           | `Calculator`, `HttpClient`        |
+| Variables          | snake_case           | `counter`, `file_name`            |
+| Functions/Methods  | snake_case           | `process_data()`, `get_name()`    |
+| Member variables   | `m_` prefix          | `m_value`, `m_is_valid`           |
+| Static members     | `m_` prefix          | `m_instance_count`                |
+| Global variables   | `g_` prefix          | `g_debug_mode`                    |
+| Constants          | SCREAMING_SNAKE_CASE | `MAX_BUFFER_SIZE`                 |
+| Namespaces         | snake_case           | `data_processing`, `network`      |
+| Trait interfaces   | `-able` suffix       | `Drawable`, `Serializable`        |
+| Service interfaces | `I` prefix           | `ILogger`, `ICalculator`          |
+| Enums              | PascalCase           | `enum class Color { Red, Green }` |
+| Type aliases       | PascalCase           | `using StringList = ...`          |
+| Files              | snake_case           | `data_processor.cpp`              |
 
 ---
 
@@ -53,7 +53,7 @@ static bool g_debug_mode = false;
 **Rationale for prefixes**:
 - `m_` immediately identifies member access, avoiding ambiguity with parameters
 - `g_` flags global state access, making dependencies visible during code review
-- Constants use SCREAMING_SNAKE_CASE without prefix (already distinct)
+- Constants use SCREAMING_SNAKE_CASE without a prefix (already distinct)
 
 ## Functions
 
@@ -122,16 +122,17 @@ class MockLogger : public ILogger { };
 ```
 
 **When to use which**:
-- `-able`: Describes a capability ("what can it do?") - typically 1-3 methods
-- `I` prefix: Defines a service contract ("what is it?") - used for dependency injection and mocking
+
+- `-able`: Describes a capability ("what can it do?") – typically 1–3 methods
+- `I` prefix: Defines a service contract ("what is it?") – used for dependency injection and mocking
 
 ## Files
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Header | snake_case.h | `http_client.h` |
-| Source | snake_case.cpp | `http_client.cpp` |
-| Test | snake_case.test.cpp | `http_client.test.cpp` |
+| Type      | Pattern                  | Example                     |
+|-----------|--------------------------|-----------------------------|
+| Header    | snake_case.h             | `http_client.h`             |
+| Source    | snake_case.cpp           | `http_client.cpp`           |
+| Test      | snake_case.test.cpp      | `http_client.test.cpp`      |
 | Benchmark | snake_case.benchmark.cpp | `http_client.benchmark.cpp` |
 
 **Conversion rule**: PascalCase class → snake_case file
@@ -171,13 +172,13 @@ These conventions prioritize:
 
 ## Quick Reference
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| Project name | `kebab-case` | `media-analyser` |
-| Target name | `kebab-case` | `media-analyser-tests` |
-| Namespace alias | `snake_case::` | `media_analyser::media_analyser` |
-| Variables / Options | `SCREAMING_SNAKE_CASE` | `MEDIA_ANALYSER_ENABLE_TEST` |
-| File sets / exports | `snake_case` | `media_analyser_headers` |
+| Element             | Convention             | Example                          |
+|---------------------|------------------------|----------------------------------|
+| Project name        | `kebab-case`           | `media-analyser`                 |
+| Target name         | `kebab-case`           | `media-analyser-tests`           |
+| Namespace alias     | `snake_case::`         | `media_analyser::media_analyser` |
+| Variables / Options | `SCREAMING_SNAKE_CASE` | `MEDIA_ANALYSER_ENABLE_TESTS`    |
+| File sets / exports | `snake_case`           | `media_analyser_headers`         |
 
 ---
 
@@ -202,7 +203,7 @@ add_library(media_analyser::media_analyser ALIAS media-analyser)
 All CMake variables and options use uppercase with underscores, consistent with C++ constants. Always prefix with the project name to avoid collisions:
 
 ```cmake
-option(MEDIA_ANALYSER_ENABLE_TEST "Enable testing" OFF)
+option(MEDIA_ANALYSER_ENABLE_TESTS "Enable testing" OFF)
 option(MEDIA_ANALYSER_ENABLE_BENCH "Enable benchmarking" OFF)
 set(MEDIA_ANALYSER_SOURCES src/foo.cpp)
 ```

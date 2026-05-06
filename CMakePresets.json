@@ -12,7 +12,7 @@
             "binaryDir": "${sourceDir}/build/dev",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "MEDIA_ANALYSER_ENABLE_TEST": "ON",
+                "MEDIA_ANALYSER_ENABLE_TESTS": "ON",
                 "VCPKG_MANIFEST_FEATURES": "test"
             }
         },
@@ -24,7 +24,7 @@
             "binaryDir": "${sourceDir}/build/test",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "MEDIA_ANALYSER_ENABLE_TEST": "ON",
+                "MEDIA_ANALYSER_ENABLE_TESTS": "ON",
                 "VCPKG_MANIFEST_FEATURES": "test"
             }
         },
@@ -47,65 +47,6 @@
                 "MEDIA_ANALYSER_ENABLE_BENCH": "ON",
                 "VCPKG_MANIFEST_FEATURES": "benchmark"
             }
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "dev",
-            "displayName": "Development (Debug)",
-            "description": "Build debug binaries for local development.",
-            "configurePreset": "dev"
-        },
-        {
-            "name": "test",
-            "displayName": "Test (RelWithDebInfo)",
-            "description": "Build optimized binaries for test execution.",
-            "configurePreset": "test",
-            "targets": ["media-analyser-tests"]
-        },
-        {
-            "name": "release",
-            "displayName": "Release",
-            "description": "Build fully optimized release binaries.",
-            "configurePreset": "release",
-            "targets": ["media-analyser"]
-        },
-        {
-            "name": "bench",
-            "displayName": "Benchmark",
-            "description": "Build optimized benchmark binaries.",
-            "configurePreset": "bench",
-            "targets": ["media-analyser-bench"]
-        }
-    ],
-    "testPresets": [
-        {
-            "name": "dev",
-            "displayName": "Development (Debug)",
-            "description": "Run tests against the debug build.",
-            "configurePreset": "dev",
-            "output": {"outputOnFailure": true},
-            "execution": {"noTestsAction": "error"}
-        },
-        {
-            "name": "test",
-            "displayName": "Test (RelWithDebInfo)",
-            "description": "Run tests against the optimized test build.",
-            "configurePreset": "test",
-            "output": {"outputOnFailure": true},
-            "execution": {"noTestsAction": "error"}
-        }
-    ],
-    "workflowPresets": [
-        {
-            "name": "test",
-            "displayName": "Test",
-            "description": "Configure, build, and run tests using the test preset.",
-            "steps": [
-                {"type": "configure", "name": "test"},
-                {"type": "build", "name": "test"},
-                {"type": "test", "name": "test"}
-            ]
         }
     ]
 }

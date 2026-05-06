@@ -63,29 +63,29 @@ main.cpp
 
 Tests use **DocTest** + **Trompeloeil** (mocking). The test entry point is `tests/main.cpp`.
 
-| Test type | Location | File suffix | What it tests |
-|-----------|----------|-------------|---------------|
-| Unit | `tests/unit/` | `.utest.cpp` | Public API with mocks/byte arrays — no real files |
-| Integration | `tests/integration/` | `.itest.cpp` | Real files on disk |
+| Test type   | Location             | File suffix  | What it tests                                     |
+|-------------|----------------------|--------------|---------------------------------------------------|
+| Unit        | `tests/unit/`        | `.utest.cpp` | Public API with mocks/byte arrays — no real files |
+| Integration | `tests/integration/` | `.itest.cpp` | Real files on disk                                |
 
 Test case naming: `TEST_CASE("Module - Scenario")`, subcases use `SUBCASE("specific scenario")`.
 All tests follow the Arrange-Act-Assert pattern.
 
 ## Naming Conventions
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| Classes/Structs | PascalCase | `MediaAnalyser` |
-| Functions/Methods | snake_case | `is_supported()` |
-| Member variables | `m_` prefix | `m_decoder` |
-| Global variables | `g_` prefix | `g_debug_mode` |
-| Constants | SCREAMING_SNAKE_CASE | `MAX_BUFFER_SIZE` |
-| Service interfaces | `I` prefix | `ILogger`, `IMediaDecoder` |
-| Capability interfaces | `-able` suffix | `Drawable` |
-| Error types | `Error` suffix | `DecodeError` |
-| Files | snake_case | `media_decoder.cpp` |
-| CMake targets | kebab-case | `media-analyser-tests` |
-| CMake variables | SCREAMING_SNAKE_CASE | `MEDIA_ANALYSER_ENABLE_TEST` |
+| Element               | Convention           | Example                       |
+|-----------------------|----------------------|-------------------------------|
+| Classes/Structs       | PascalCase           | `MediaAnalyser`               |
+| Functions/Methods     | snake_case           | `is_supported()`              |
+| Member variables      | `m_` prefix          | `m_decoder`                   |
+| Global variables      | `g_` prefix          | `g_debug_mode`                |
+| Constants             | SCREAMING_SNAKE_CASE | `MAX_BUFFER_SIZE`             |
+| Service interfaces    | `I` prefix           | `ILogger`, `IMediaDecoder`    |
+| Capability interfaces | `-able` suffix       | `Drawable`                    |
+| Error types           | `Error` suffix       | `DecodeError`                 |
+| Files                 | snake_case           | `media_decoder.cpp`           |
+| CMake targets         | kebab-case           | `media-analyser-tests`        |
+| CMake variables       | SCREAMING_SNAKE_CASE | `MEDIA_ANALYSER_ENABLE_TESTS` |
 
 ## Code Style
 

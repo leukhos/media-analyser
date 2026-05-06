@@ -14,15 +14,11 @@ class IMediaDecoder;
 class MediaAnalyser {
 public:
   explicit MediaAnalyser(std::shared_ptr<IMediaDecoder> decoder);
+  explicit MediaAnalyser(std::shared_ptr<IMediaDecoder> decoder,
+                         std::shared_ptr<IFileLoader> file_loader,
+                         std::shared_ptr<ILogger> logger);
 
-#ifdef MEDIA_ANALYSER_TEST
-  void set_logger(const std::shared_ptr<ILogger>& logger) { m_logger = logger; }
-  void set_file_loader(const std::shared_ptr<IFileLoader>& file_loader) {
-    m_file_loader = file_loader;
-  }
-#endif
-
-  MediaInfo analyse(const std::filesystem::path& path) const;
+  [[nodiscard]] MediaInfo analyse(const std::filesystem::path& path) const;
 
 private:
   std::shared_ptr<IMediaDecoder> m_decoder;
