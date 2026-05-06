@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
 
     steps:
       - name: Checkout code
@@ -35,10 +35,10 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure CMake
-        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }}
+        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
 
       - name: Build
-        run: cmake --build ${{ github.workspace }}/build --target media-analyser-tests
+        run: cmake --build ${{ github.workspace }}/build
 
       - name: Test
         working-directory: ${{ github.workspace }}/build
