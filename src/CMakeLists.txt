@@ -27,6 +27,7 @@ target_include_directories(media-analyser-lib
 )
 
 target_compile_features(media-analyser-lib PUBLIC cxx_std_17)
+media_analyser_enable_warnings(media-analyser-lib)
 
 add_executable(media-analyser)
 target_sources(media-analyser
@@ -34,6 +35,8 @@ target_sources(media-analyser
         main.cpp
 )
 target_compile_features(media-analyser PRIVATE cxx_std_17)
+media_analyser_enable_warnings(media-analyser)
+
 target_link_libraries(media-analyser
         PRIVATE
         media-analyser-lib

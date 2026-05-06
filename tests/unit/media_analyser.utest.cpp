@@ -40,7 +40,7 @@ TEST_CASE("MediaAnalyser::analyse") {
   const std::vector<std::byte> fake_bytes{std::byte{0x01}, std::byte{0x02}};
 
   SUBCASE("FileLoader throws — logs Error with 'FileLoader', returns invalid "
-          "MediaInfo") {
+      "MediaInfo") {
     ALLOW_CALL(*mock_file_loader, load(fake_path))
         .THROW(ma::FileLoaderError("load failed"));
 
@@ -53,7 +53,7 @@ TEST_CASE("MediaAnalyser::analyse") {
   }
 
   SUBCASE("decoder throws MediaDecoderError — logs Error with 'MediaDecoder', "
-          "returns invalid MediaInfo") {
+      "returns invalid MediaInfo") {
     ALLOW_CALL(*mock_file_loader, load(fake_path)).RETURN(fake_bytes);
     ALLOW_CALL(*mock_decoder, decode(trompeloeil::_))
         .THROW(ma::MediaDecoderError("bad frame"));
@@ -67,7 +67,7 @@ TEST_CASE("MediaAnalyser::analyse") {
   }
 
   SUBCASE("decoder throws unexpected exception — logs Error, returns invalid "
-          "MediaInfo") {
+      "MediaInfo") {
     ALLOW_CALL(*mock_file_loader, load(fake_path)).RETURN(fake_bytes);
     ALLOW_CALL(*mock_decoder, decode(trompeloeil::_))
         .THROW(std::runtime_error("unexpected"));

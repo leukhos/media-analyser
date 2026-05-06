@@ -1,12 +1,8 @@
 {
     "version": 9,
-    "include": [
-        "cmake/presets/CMake${hostSystemName}Presets.json"
-    ],
     "configurePresets": [
         {
             "name": "dev",
-            "inherits": "platform",
             "displayName": "Development (Debug)",
             "description": "Unoptimized debug build with full symbols and tests enabled.",
             "binaryDir": "${sourceDir}/build/dev",
@@ -18,7 +14,6 @@
         },
         {
             "name": "test",
-            "inherits": "platform",
             "displayName": "Test (RelWithDebInfo)",
             "description": "Optimized build with debug info and tests enabled.",
             "binaryDir": "${sourceDir}/build/test",
@@ -30,22 +25,11 @@
         },
         {
             "name": "release",
-            "inherits": "platform",
             "displayName": "Release",
             "description": "Fully optimized release build with tests disabled.",
             "binaryDir": "${sourceDir}/build/release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "bench",
-            "inherits": "release",
-            "displayName": "Benchmark",
-            "description": "Fully optimized release build with benchmarks enabled.",
-            "cacheVariables": {
-                "MEDIA_ANALYSER_ENABLE_BENCH": "ON",
-                "VCPKG_MANIFEST_FEATURES": "benchmark"
             }
         }
     ]

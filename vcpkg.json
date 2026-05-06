@@ -8,12 +8,6 @@
         "mp3lame",
         "trompeloeil"
       ]
-    },
-    "bench": {
-      "description": "Benchmarking support",
-      "dependencies": [
-        "benchmark"
-      ]
     }
   },
   "version-string": "1.0.0"
