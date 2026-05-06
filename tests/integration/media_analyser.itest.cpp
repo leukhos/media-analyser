@@ -1,5 +1,5 @@
-#include "media_analyser.hpp"
-#include "media_decoder.hpp"
+#include "media_analyser.h"
+#include "media_decoder.h"
 
 #include <doctest/doctest.h>
 

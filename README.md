@@ -22,11 +22,11 @@ media-analyser/
 ├── CMakePresets.json           # CMake presets (dev, test, release, bench)
 ├── vcpkg.json                  # vcpkg dependency manifest
 ├── include/                    # Public headers
-│   ├── media_analyser.hpp      # MediaAnalyser — orchestrates loading and decoding
-│   ├── media_decoder.hpp       # IMediaDecoder interface + Mp3MediaDecoder
-│   ├── file_loader.hpp         # IFileLoader interface + IfstreamFileLoader
-│   ├── logger.hpp              # ILogger interface + StdErrLogger
-│   └── media_types.hpp         # ByteSpan, MediaInfo result type
+│   ├── media_analyser.h      # MediaAnalyser — orchestrates loading and decoding
+│   ├── media_decoder.h       # IMediaDecoder interface + Mp3MediaDecoder
+│   ├── file_loader.h         # IFileLoader interface + IfstreamFileLoader
+│   ├── logger.h              # ILogger interface + StdErrLogger
+│   └── media_types.h         # ByteSpan, MediaInfo result type
 ├── src/                        # Implementation
 │   ├── main.cpp                # CLI entry point
 │   ├── media_analyser.cpp

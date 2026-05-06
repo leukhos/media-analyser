@@ -13,7 +13,7 @@ struct ByteSpan {
 struct MediaInfo {
   bool is_valid = false;
   std::uint32_t frame_count = 0;
-  int sample_rate = 0;     // Hz
+  int sample_rate = 0;          // Hz
   float average_bitrate = 0.0f; // kbps
 };
 

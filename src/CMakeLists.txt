@@ -8,11 +8,11 @@ target_sources(media-analyser-lib
         TYPE HEADERS
         BASE_DIRS ${PROJECT_SOURCE_DIR}/include
         FILES
-        ${PROJECT_SOURCE_DIR}/include/logger.hpp
-        ${PROJECT_SOURCE_DIR}/include/media_analyser.hpp
-        ${PROJECT_SOURCE_DIR}/include/media_decoder.hpp
-        ${PROJECT_SOURCE_DIR}/include/media_types.hpp
-        ${PROJECT_SOURCE_DIR}/include/file_loader.hpp
+        ${PROJECT_SOURCE_DIR}/include/logger.h
+        ${PROJECT_SOURCE_DIR}/include/media_analyser.h
+        ${PROJECT_SOURCE_DIR}/include/media_decoder.h
+        ${PROJECT_SOURCE_DIR}/include/media_types.h
+        ${PROJECT_SOURCE_DIR}/include/file_loader.h
         PRIVATE
         logger.cpp
         media_analyser.cpp

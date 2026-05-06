@@ -47,7 +47,7 @@ main.cpp
               └── StderrLogger        (concrete: writes to stderr)
 ```
 
-**Key types** (`include/media_types.hpp`):
+**Key types** (`include/media_types.h`):
 - `ByteSpan` — non-owning `{const std::byte*, size_t}` view passed to the decoder
 - `MediaInfo` — result struct: `is_valid`, `frame_count`, `sample_rate`, `average_bitrate`
 

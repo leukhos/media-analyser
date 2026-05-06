@@ -1,6 +1,6 @@
 #pragma once
 
-#include "media_types.hpp"
+#include "media_types.h"
 
 #include <array>
 #include <cstddef>

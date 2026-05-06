@@ -1,5 +1,5 @@
-#include "media_decoder.hpp"
-#include "media_types.hpp"
+#include "media_decoder.h"
+#include "media_types.h"
 
 #include <cstddef>
 #include <cstdint>

@@ -6,7 +6,7 @@ This document provides coding standards for this C++ project.
 
 ### Headers (Order & Grouping)
 1. Precompiled headers (`#include "pch.h"`)
-2. First-party headers (`#include "calculator.hpp"`)
+2. First-party headers (`#include "calculator.h"`)
 3. Third-party headers (`#include <doctest/doctest.h>`)
 4. Standard library (`#include <iostream>`)
 
@@ -40,7 +40,7 @@ This document provides coding standards for this C++ project.
 #include "pch.h"
 
 // First-party headers
-#include "calculator.hpp"
+#include "calculator.h"
 #include "math_utils.h"
 
 // Third-party headers
@@ -73,7 +73,7 @@ Unit tests live in source files and are stripped from production builds:
 
 ```cpp
 // src/calculator.cpp
-#include "calculator.hpp"
+#include "calculator.h"
 
 #include <doctest/doctest.h>
 
@@ -100,7 +100,7 @@ Test public API from a user's perspective:
 
 ```cpp
 // tests/calculator.test.cpp
-#include "calculator.hpp"
+#include "calculator.h"
 
 #include <doctest/doctest.h>
 
