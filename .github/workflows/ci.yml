@@ -28,7 +28,7 @@ jobs:
 
       - name: Configure CMake
         shell: bash
-        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake
+        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_INSTALLATION_ROOT }}/scripts/buildsystems/vcpkg.cmake"
 
       - name: Build
         shell: bash
