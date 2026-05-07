@@ -28,7 +28,6 @@ jobs:
           restore-keys: ${{ runner.os }}-vcpkg-test-
 
       - name: Setup environment
-        if: runner.os != 'Windows'
         run: echo "VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}" >> $GITHUB_ENV
 
       - name: Configure CMake
