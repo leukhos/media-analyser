@@ -36,10 +36,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure CMake
-        run: cmake --preset test
-          -B ${{ github.workspace }}/build
-          -S ${{ github.workspace }}
-          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+        run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }}
 
       - name: Build
         run: cmake --build ${{ github.workspace }}/build

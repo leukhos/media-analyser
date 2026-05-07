@@ -1,36 +1,44 @@
 {
-    "version": 9,
-    "configurePresets": [
-        {
-            "name": "dev",
-            "displayName": "Development (Debug)",
-            "description": "Unoptimized debug build with full symbols and tests enabled.",
-            "binaryDir": "${sourceDir}/build/dev",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "MEDIA_ANALYSER_ENABLE_TESTS": "ON",
-                "VCPKG_MANIFEST_FEATURES": "test"
-            }
-        },
-        {
-            "name": "test",
-            "displayName": "Test (RelWithDebInfo)",
-            "description": "Optimized build with debug info and tests enabled.",
-            "binaryDir": "${sourceDir}/build/test",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "MEDIA_ANALYSER_ENABLE_TESTS": "ON",
-                "VCPKG_MANIFEST_FEATURES": "test"
-            }
-        },
-        {
-            "name": "release",
-            "displayName": "Release",
-            "description": "Fully optimized release build with tests disabled.",
-            "binaryDir": "${sourceDir}/build/release",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        }
-    ]
+  "version": 9,
+  "configurePresets": [
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+    },
+    {
+      "name": "dev",
+      "displayName": "Development (Debug)",
+      "description": "Unoptimized debug build with full symbols and tests enabled.",
+      "inherits": "vcpkg",
+      "binaryDir": "${sourceDir}/build/dev",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "MEDIA_ANALYSER_ENABLE_TESTS": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test"
+      }
+    },
+    {
+      "name": "test",
+      "displayName": "Test (RelWithDebInfo)",
+      "description": "Optimized build with debug info and tests enabled.",
+      "inherits": "vcpkg",
+      "binaryDir": "${sourceDir}/build/test",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "MEDIA_ANALYSER_ENABLE_TESTS": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "description": "Fully optimized release build with tests disabled.",
+      "inherits": "vcpkg",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ]
 }
