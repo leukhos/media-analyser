@@ -33,8 +33,7 @@ jobs:
 
       - name: Setup environment (Windows)
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
+        uses: step-security/msvc-dev-cmd@v1
 
       - name: Configure CMake
         run: cmake --preset test -B ${{ github.workspace }}/build -S ${{ github.workspace }}
