@@ -29,7 +29,10 @@ class MockMediaDecoder : public trompeloeil::mock_interface<ma::IMediaDecoder> {
 
 TEST_SUITE_BEGIN("unit");
 
-TEST_CASE("MediaAnalyser::analyse") {
+TEST_CASE (
+"MediaAnalyser::analyse (unit)"
+)
+ {
   auto mock_decoder = std::make_shared<MockMediaDecoder>();
   auto mock_logger = std::make_shared<MockLogger>();
   auto mock_file_loader = std::make_shared<MockFileLoader>();

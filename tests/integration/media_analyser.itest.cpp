@@ -23,7 +23,10 @@ static const std::filesystem::path mp3_dir = samples_dir / "mp3";
 
 TEST_SUITE_BEGIN("integration");
 
-TEST_CASE("MediaAnalyser::analyse") {
+TEST_CASE (
+"MediaAnalyser::analyse (integration)"
+)
+ {
   auto analyser = ma::MediaAnalyser(std::make_shared<ma::Mp3MediaDecoder>());
 
   // ── ISO 11172-4 Layer III conformance files ───────────────────────────────
