@@ -25,3 +25,7 @@ void StdErrLogger::log(LogLevel level, std::string_view message) {
 }
 
 } // namespace media_analyser
+
+void some_function() {
+  int intentionally_unused_warning_probe = 42;
+}
