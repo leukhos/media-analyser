@@ -25,7 +25,7 @@ MediaAnalyser::MediaAnalyser(std::shared_ptr<IMediaDecoder> decoder,
     : m_decoder{std::move(decoder)}, m_file_loader{std::move(file_loader)},
       m_logger{std::move(logger)} {}
 
-MediaInfo MediaAnalyser::analyse(const std::filesystem::path& path) const {
+MediaInfo MediaAnalyser::analyse(const fs::path& path) const {
   try {
     auto buf = m_file_loader->load(path);
     return m_decoder->decode({buf.data(), buf.size()});

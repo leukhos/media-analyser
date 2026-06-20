@@ -1,14 +1,7 @@
 {
   "name": "media-analyser",
-  "features": {
-    "test": {
-      "description": "Test dependencies",
-      "dependencies": [
-        "doctest",
-        "mp3lame",
-        "trompeloeil"
-      ]
-    }
-  },
-  "version-string": "1.0.0"
+  "version-string": "1.0.0",
+  "dependencies": [
+    "mp3lame"
+  ]
 }

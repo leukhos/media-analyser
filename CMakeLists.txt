@@ -8,8 +8,8 @@ option(MEDIA_ANALYSER_ENABLE_TESTS "Enable testing" OFF)
 add_subdirectory(src)
 
 if (MEDIA_ANALYSER_ENABLE_TESTS)
-    include(CTest)
-    add_subdirectory(tests)
+  include(CTest)
+  add_subdirectory(tests)
 endif ()
 
 include(CPack)

@@ -1,7 +1,10 @@
 .claude
 .vscode
+.zed
 
 # CMake directory
 build
 dist
 CMakeUserPresets.json
+
+.clangd
